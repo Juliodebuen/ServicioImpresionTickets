@@ -14,6 +14,53 @@ public class Schedule {
     public static ArrayList<ImpresionInfo> colaImpresion = new ArrayList<>();
     private POSPrinter ptr;
     
+    private int findClosestElement(String contenido) {
+		int[] simbols = new int[11];
+		ArrayList<Integer> finalSimbols = new ArrayList<>();
+		///order of elements 
+		/* 0 = bc
+		 * 1 = ca
+		 * 2 = ra
+		 * 3 = 5uc
+		 * 4 = 2c
+		 * 5 = 3c
+		 * 6 = 4c
+		 * 7 = 3hc
+		 * 8 = 3vc
+		 * 9 = 1uc
+		 * 10 = N
+		 */
+		simbols[0] = contenido.indexOf("bC");	
+		simbols[1] = contenido.indexOf("cA");	
+		simbols[2] = contenido.indexOf("rA");	
+		simbols[3] = contenido.indexOf("5uC");	
+		simbols[4] = contenido.indexOf("2C");	
+		simbols[5] = contenido.indexOf("3C");	
+		simbols[6] = contenido.indexOf("4C");	
+		simbols[7] = contenido.indexOf("3hC");	
+		simbols[8] = contenido.indexOf("3vC");	
+		simbols[9] = contenido.indexOf("1uC");
+		simbols[10] = contenido.indexOf("N");	
+		
+		for(int  i = 0; i < simbols.length; i++) {
+			if(simbols[i] > -1) {
+				finalSimbols.add(simbols[i]);
+			}
+		}
+		
+		int minAt = 0;
+
+		for (int i = 1; i < finalSimbols.size(); i++) {
+				minAt = finalSimbols.get(i) < finalSimbols.get(minAt) ? i : minAt;
+		}
+		if(finalSimbols.size() > 0) {
+			System.out.println("CLOSEST ELEMENT: "+ finalSimbols.get(minAt));
+			return finalSimbols.get(minAt);
+		}else {
+			return -1;
+		}
+    }
+    
 	@Scheduled(fixedRate = 3000)
 	public void scheduled() {
 		System.out.println("Comienza busqueda de elementos en cola");
@@ -23,83 +70,51 @@ public class Schedule {
 			int beforeSimbolIndex = 0;
 			String contenido = colaImpresion.get(0).getMessage(); //mucho contenido rA por aqui rA
 			byte ESCSquence[] = new byte[]{0x1B, 0x7C};
-			try {
-				if(!contenido.contains(new String(ESCSquence))) {
-					while(!isFoundNothing) {
-						
-						//System.out.println(new String(ESCSquence).length());
-						
-						//						0->18 				30					
-						if(contenido.substring(currentIndex, contenido.length()).contains("bC")){
-						//		16->28					0->18							0->18			30				16->10
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("bC"); // mucho contenido -> por aqui
-						//												18				28								
-							String primerMitad = contenido.substring(currentIndex, beforeSimbolIndex) + new String(ESCSquence); // mucho contenido [ESCSquence] -> por aqui [ESCSquence]
-						//												28					30			
-							String segundaMitad = contenido.substring(beforeSimbolIndex, contenido.length()); //rA por aqui rA -> rA
-						//											0->18	
-							contenido = contenido.substring(0, currentIndex) + primerMitad + segundaMitad; //mucho contenido [ESCSquence]rA por aqui rA -> por aqui rA
-						//		18			16
-							currentIndex = beforeSimbolIndex +4; 
-						}else {
-							isFoundNothing = true; 
-							colaImpresion.get(0).setMessage(contenido);
-							System.out.println(contenido);
-						}
-						
-						
-					/*	if(colaImpresion.get(0).getMessage().contains("rA")) {
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(currentIndex, str.indexOf("rA")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("rA") , str.length());
-							colaImpresion.get(0).setMessage(aux);
-							System.out.println(aux);
-						}
-						else if(colaImpresion.get(0).getMessage().contains("cA")) {
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(0, str.indexOf("cA")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("cA") , str.length());
-							colaImpresion.get(0).setMessage(aux);
-						}
-						else if(colaImpresion.get(0).getMessage().contains("bC")) {
-							System.out.println("entro aqui");
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(0, str.indexOf("bC")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("bC") , str.length());
-							colaImpresion.get(0).setMessage(aux);
+			if(!contenido.contains(new String(ESCSquence))) {
+				while(!isFoundNothing) {
+					int closestElement = findClosestElement(contenido.substring(currentIndex, contenido.length()));
+					if(closestElement > -1) {
+						beforeSimbolIndex = currentIndex + closestElement;
+					/*	if(contenido.substring(currentIndex, contenido.length()).contains("bC")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("bC");
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("cA")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("cA"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("rA") ){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("rA"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("5uC") ){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("5uC"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("2C")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("2C"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("3C") ){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("3C"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("4C") ){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("4C"); 
+						}*//*else if(contenido.substring(currentIndex, contenido.length()).contains("3hC")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("3hC"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("3vC")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("3vC"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("1uC")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("1uC"); 
+						}else if(contenido.substring(currentIndex, contenido.length()).contains("N")){
+							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("N"); 
+						}*///else {
+						//	isFoundNothing = true; 
 							
-							System.out.println(aux);
-						}
-						else if(colaImpresion.get(0).getMessage().contains("1uC")) {
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(0, str.indexOf("1uC")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("1uC") , str.length());
-							colaImpresion.get(0).setMessage(aux);
-						}
-						else if(colaImpresion.get(0).getMessage().contains("4C")) {
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(0, str.indexOf("4C")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("4C") , str.length());
-							colaImpresion.get(0).setMessage(aux);
-						}
-						else if(colaImpresion.get(0).getMessage().contains("3C")) {
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(0, str.indexOf("3C")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("3C") , str.length());
-							colaImpresion.get(0).setMessage(aux);
-						}
-						else if(colaImpresion.get(0).getMessage().contains("2C")) {
-							String str = colaImpresion.get(0).getMessage();
-							String aux = str.substring(0, str.indexOf("2C")) + new String(ESCSquence);
-							aux = aux + str.substring(str.indexOf("2C") , str.length());
-							colaImpresion.get(0).setMessage(aux);
-						}else {
-							isFoundNothing = true;
-							System.out.println("get in");
-						}*/
+						//	return;
+					//	}	
+					}else {
+						isFoundNothing = true;
+						colaImpresion.get(0).setMessage(contenido);
+						System.out.println(contenido);
+						return;
 					}
+					String primerMitad = contenido.substring(currentIndex, beforeSimbolIndex) + new String(ESCSquence);
+					String segundaMitad = contenido.substring(beforeSimbolIndex, contenido.length()); 
+					contenido = contenido.substring(0, currentIndex) + primerMitad + segundaMitad;
+					currentIndex = beforeSimbolIndex +4; 
 				}
-				
+			}
+			try {	
 				ptr = new POSPrinter();
 				System.setProperty(JposPropertiesConst.JPOS_POPULATOR_FILE_PROP_NAME, "src/main/java/jpos.xml");
 				String logicalName = "SRP-350plusIII";
@@ -116,7 +131,7 @@ public class Schedule {
 				System.out.println("ticket "+ colaImpresion.get(0).getCount()+" impreso");
 				colaImpresion.remove(0);
 			}catch(JposException e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}finally {
 				try {
 					ptr.setDeviceEnabled(false);
