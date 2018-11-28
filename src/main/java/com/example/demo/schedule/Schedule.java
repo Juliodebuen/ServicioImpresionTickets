@@ -15,43 +15,34 @@ public class Schedule {
     private POSPrinter ptr;
     
     private int findClosestElement(String contenido) {
-		int[] simbols = new int[11];
+		//int[] simbols = new int[10];
+		ArrayList<Integer> simbols = new ArrayList<>();
 		ArrayList<Integer> finalSimbols = new ArrayList<>();
-		///order of elements 
-		/* 0 = bc
-		 * 1 = ca
-		 * 2 = ra
-		 * 3 = 5uc
-		 * 4 = 2c
-		 * 5 = 3c
-		 * 6 = 4c
-		 * 7 = 3hc
-		 * 8 = 3vc
-		 * 9 = 1uc
-		 * 10 = N
-		 */
-		simbols[0] = contenido.indexOf("bC");	
-		simbols[1] = contenido.indexOf("cA");	
-		simbols[2] = contenido.indexOf("rA");	
-		simbols[3] = contenido.indexOf("5uC");	
-		simbols[4] = contenido.indexOf("2C");	
-		simbols[5] = contenido.indexOf("3C");	
-		simbols[6] = contenido.indexOf("4C");	
-		simbols[7] = contenido.indexOf("3hC");	
-		simbols[8] = contenido.indexOf("3vC");	
-		simbols[9] = contenido.indexOf("1uC");
-		simbols[10] = contenido.indexOf("N");	
-		
-		for(int  i = 0; i < simbols.length; i++) {
-			if(simbols[i] > -1) {
-				finalSimbols.add(simbols[i]);
+		simbols.add(contenido.indexOf("bC"));	
+		simbols.add(contenido.indexOf("cA"));	
+		simbols.add(contenido.indexOf("rA"));	
+		simbols.add(contenido.indexOf("5uC"));	
+		simbols.add(contenido.indexOf("2C"));	
+		simbols.add(contenido.indexOf("3C"));	
+		simbols.add(contenido.indexOf("4C"));	
+		simbols.add(contenido.indexOf("3hC"));	
+		simbols.add(contenido.indexOf("3vC"));	
+		simbols.add(contenido.indexOf("1uC"));
+		if(contenido.contains("N")) {
+			//System.out.println("got in " + (contenido.charAt(contenido.indexOf("N")+1) == ' '));
+			if(contenido.charAt(contenido.indexOf("N") + 1) == ' ') {
+				simbols.add(contenido.indexOf("N"));	
+			}
+		}
+		for(int  i = 0; i < simbols.size(); i++) {
+			if(simbols.get(i) > -1) {
+				finalSimbols.add(simbols.get(i));
 			}
 		}
 		
 		int minAt = 0;
-
 		for (int i = 1; i < finalSimbols.size(); i++) {
-				minAt = finalSimbols.get(i) < finalSimbols.get(minAt) ? i : minAt;
+			minAt = finalSimbols.get(i) < finalSimbols.get(minAt) ? i : minAt;
 		}
 		if(finalSimbols.size() > 0) {
 			System.out.println("CLOSEST ELEMENT: "+ finalSimbols.get(minAt));
@@ -75,35 +66,9 @@ public class Schedule {
 					int closestElement = findClosestElement(contenido.substring(currentIndex, contenido.length()));
 					if(closestElement > -1) {
 						beforeSimbolIndex = currentIndex + closestElement;
-					/*	if(contenido.substring(currentIndex, contenido.length()).contains("bC")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("bC");
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("cA")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("cA"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("rA") ){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("rA"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("5uC") ){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("5uC"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("2C")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("2C"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("3C") ){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("3C"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("4C") ){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("4C"); 
-						}*//*else if(contenido.substring(currentIndex, contenido.length()).contains("3hC")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("3hC"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("3vC")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("3vC"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("1uC")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("1uC"); 
-						}else if(contenido.substring(currentIndex, contenido.length()).contains("N")){
-							beforeSimbolIndex = currentIndex + contenido.substring(currentIndex, contenido.length()).indexOf("N"); 
-						}*///else {
-						//	isFoundNothing = true; 
-							
-						//	return;
-					//	}	
 					}else {
 						isFoundNothing = true;
+						//colores
 						colaImpresion.get(0).setMessage(contenido);
 						System.out.println(contenido);
 						return;
